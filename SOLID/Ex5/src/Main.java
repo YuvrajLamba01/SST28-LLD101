@@ -3,7 +3,12 @@ public class Main {
         System.out.println("=== Export Demo ===");
 
         ExportRequest req = new ExportRequest("Weekly Report", SampleData.longBody());
-        Exporter pdf = new PdfExporter();
+        
+        // Use decorator for PDF to enforce size constraint
+        // (separates format encoding from delivery constraints - LSP fix)
+        Exporter pdf = new SizeConstrainedExporter(new PdfExporter(), 20);
+        
+        // Other exporters honor the contract without decorators
         Exporter csv = new CsvExporter();
         Exporter json = new JsonExporter();
 

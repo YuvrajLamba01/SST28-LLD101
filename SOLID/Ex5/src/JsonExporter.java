@@ -1,16 +1,29 @@
 import java.nio.charset.StandardCharsets;
 
+/**
+ * JSON exporter - honors the base contract consistently.
+ * Handles null values the same way across all fields.
+ */
 public class JsonExporter extends Exporter {
     @Override
     public ExportResult export(ExportRequest req) {
-        // inconsistent handling (surprise)
-        if (req == null) return new ExportResult("application/json", new byte[0]);
-        String json = "{\"title\":\"" + escape(req.title) + "\",\"body\":\"" + escape(req.body) + "\"}";
+        // Consistent handling: if req is null, throw like other exporters
+        if (req == null) {
+            throw new IllegalArgumentException("Request cannot be null");
+        }
+        
+        String title = req.title == null ? "" : escape(req.title);
+        String body = req.body == null ? "" : escape(req.body);
+        
+        String json = "{\"title\":\"" + title + "\",\"body\":\"" + body + "\"}";
         return new ExportResult("application/json", json.getBytes(StandardCharsets.UTF_8));
     }
 
     private String escape(String s) {
         if (s == null) return "";
-        return s.replace("\"", "\\\"");
+        return s.replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r");
     }
 }
