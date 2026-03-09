@@ -1,13 +1,15 @@
 package com.example.reports;
 
+import java.util.Objects;
+
 /**
- * CURRENT STATE (BROKEN ON PURPOSE):
- * - Viewer depends directly on concrete ReportFile
- * - No Proxy involved
+ * Viewer: now depends on Report interface (via proxy).
  */
 public class ReportViewer {
 
-    public void open(ReportFile report, User user) {
+    public void open(Report report, User user) {
+        Objects.requireNonNull(report, "report");
+        Objects.requireNonNull(user, "user");
         report.display(user);
     }
 }
